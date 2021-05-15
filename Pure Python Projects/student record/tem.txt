@@ -1,0 +1,203 @@
+from tkinter import *
+import pickle
+from Student import Student
+
+sb1=Tk()
+sb1.title("Create New Record")
+sb1.geometry("500x250")
+
+
+r = IntVar()
+n = StringVar()
+m = DoubleVar()
+
+def fb1():
+    fstu = open("student.dat", "ab+")
+    def next():
+        Student.idx(1)
+        stu=Student(r.get(),n.get(),m.get())
+        #bstu=bytes(str(stu),'utf-8')  converting str to bytes
+        pickle.dump(stu,fstu)
+        e1.delete(0,END)
+        e2.delete(0,END)
+        e3.delete(0,END)
+
+    c1=Label(text="Roll Number:")
+    c1.place(x=10,y=20)
+    e1=Entry(textvariable=r)
+    e1.place(x=100, y=20)
+
+    c2 = Label(text="Name:")
+    c2.place(x=45, y=50)
+    e2 = Entry(textvariable=n)
+    e2.place(x=100, y=50)
+
+    c3 = Label(text="Marks:")
+    c3.place(x=45, y=80)
+    e3 = Entry(textvariable=m)
+    e3.place(x=100, y=80)
+
+    b1=Button(text="Next", command=next)
+    b1.place(x=150, y=120)
+
+    def create():
+        fstu.close()
+
+    b2 = Button(text="Creat Record", command=create)
+    b2.place(x=300, y=120)
+
+fb1()
+
+sb1.mainloop()
+
+
+
+
+
+
+
+from tkinter import *
+import pickle
+from Student import Student
+
+sb2 = Tk()
+sb2.title("View Record")
+sb2.geometry("900x800")
+def fb2():
+    l1=Label(text="ID:                                   Name:                                   Roll No:                                  Marks                             Percentage(%):                          Remark:")
+    l1.place(relx=0.01,rely=0.05)
+
+    lb1 = Listbox(sb2,width=149,height=50)
+
+    fstu = open("student.dat", "rb")
+    i=0
+    while fstu.read(1):
+        fstu.seek(-1, 1)
+        stud = pickle.load(fstu)
+        lb1.insert(END,stud)
+        i=i+1
+
+    lb1.place(relx=0, rely=0.08)
+
+fb2()
+sb2.mainloop()
+
+
+
+
+
+
+
+
+
+
+from tkinter import *
+import pickle
+from Student import Student
+
+from sys import getsizeof
+
+def fb3():
+    sb3 = Tk()
+    sb3.title("Edit Record")
+    sb3.geometry("500x500")
+
+    l1=Label(text="Make choice:",font=[2])
+    l1.place(relx=0.05,rely=0.10)
+
+    def ffb1():
+        global oldr
+        oldr=IntVar()
+        global newr
+        newr=IntVar()
+        l2=Label(text="Old Roll Number:")
+        el2=Entry(textvariable=oldr)
+        l3=Label(text="New Roll Number:")
+        el3=Entry(textvariable=newr)
+        l2.place(relx=0.05,rely=0.30)
+        l3.place(relx=0.05, rely=0.40)
+        el2.place(relx=0.3, rely=0.30)
+        el3.place(relx=0.3, rely=0.40)
+
+        def fbl1():
+            global oldr
+            global newr
+            j="f"
+            fstu=open("student.dat","rb+")
+            while fstu.read(1):
+                fstu.seek(-1,1)
+                stu=pickle.load(fstu)
+                if(stu.rol==oldr.get()):
+                    a=bytes(str(stu),'utf-8')
+                    by=getsizeof(a)
+                    print(by)
+                    stu.rol=newr.get()
+                    fstu.seek(-225,1)
+                    #s=pickle.load(fstu)
+
+                    #pickle.dump(stu,fstu)
+
+            if(j=="p"):
+                le = Label(text="Changed!!!")
+                le.place(relx=0.3, rely=0.7)
+            else:
+                le = Label(text="No Match Found!!!")
+                le.place(relx=0.3, rely=0.7)
+
+
+        bl1 = Button(text="Done", command=fbl1)
+        bl1.place(relx=0.32,rely=0.50)
+
+
+
+
+    b1=Button(text="Edit Roll Number",command=ffb1)
+    b2 = Button(text="Edit Name")
+    b3 = Button(text="Edit Mark")
+    b1.place(relx=0.05,rely=0.20)
+    b2.place(relx=0.35, rely=0.20)
+    b3.place(relx=0.65, rely=0.20)
+    sb3.mainloop()
+
+
+
+fb3()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Student:
+    def __init__(self,rol,nam,mar):
+        self.rol=rol
+        self.nam=nam
+        self.mar=mar
+
+    def per(self):
+        perc=(self.mar/900)*100
+        return perc
+
+    def rem(self):
+        if self.per()<40.0:
+            return "Fail"
+        elif self.per()>=40.0:
+            return "Pass"
+
+    @staticmethod
+    def idx(j=0):
+        idn=j+1
+        return idn
+
+    def __repr__(self):
+        return str(self.idx()) + str("                                   ") + str(self.nam) + str("                                   ") + str(self.rol) + str("                                  ") + str(self.mar) + str("                             ") + str(self.per()) + str("                          ") + str(self.rem())
